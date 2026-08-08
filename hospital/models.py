@@ -1,5 +1,14 @@
 from django.db import models
+class Doctor(models.Model):
+    AVAILABILITY_CHOICES = [('Available', 'Available'), ('Busy', 'Busy')]
 
+    name = models.CharField(max_length=120)
+    specialization = models.CharField(max_length=120)
+    experience_years = models.PositiveIntegerField(default=0)
+    availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='Available')
+
+    def __str__(self):
+        return f"Dr. {self.name} ({self.specialization})"
 
 class Patient(models.Model):
     STATUS_CHOICES = [
