@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — MediPulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'hospital/css/style.css' %}">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="mesh"><span></span><span></span></div>
+  <form class="login-card" method="post">
+    {% csrf_token %}
+    <div class="login-logo">
+      <div class="mark">🏥</div>
+      <h1>MediPulse</h1>
+      <span>Hospital Management System</span>
+    </div>
+
+    {% if messages %}
+      {% for m in messages %}<div class="login-error">{{ m }}</div>{% endfor %}
+    {% endif %}
+
+    <div class="l-field">
+      <label>Username</label>
+      <input type="text" name="username" placeholder="admin" required autofocus>
+    </div>
+    <div class="l-field">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Login</button>
+    <p class="login-hint">Django superuser se login karein (python manage.py createsuperuser)</p>
+  </form>
+</div>
+</body>
+</html>
