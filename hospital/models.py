@@ -34,3 +34,21 @@ class Patient(models.Model):
     @property
     def patient_code(self):
         return f"PT-{1000 + self.id}"
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('Confirmed', 'Confirmed'),
+        ('Waiting', 'Waiting'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
+    ]
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
+    date = models.DateField()
+    time = models.TimeField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Confirmed')
+
+    class Meta:
+        ordering = ['-date', '-time']
+
+    def __str__(self):
+        return f"{self.patient.name} with {self.doctor.name} on {self.date}"
