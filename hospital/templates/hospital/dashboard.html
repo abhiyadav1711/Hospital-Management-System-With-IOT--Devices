@@ -1,0 +1,51 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Namaste, {{ request.user.username|title }} 👋</h1>
+    <p>Aaj ka hospital overview — {{ today|date:"l, d M Y" }}</p>
+  </div>
+</div>
+
+<div class="grid-6">
+  <div class="card stat"><div class="ic">👥</div><div class="num">{{ total_patients }}</div><div class="lbl">Total Patients</div></div>
+  <div class="card stat"><div class="ic">👨‍⚕️</div><div class="num">{{ total_doctors }}</div><div class="lbl">Total Doctors</div></div>
+  <div class="card stat"><div class="ic">📅</div><div class="num">{{ today_appointments }}</div><div class="lbl">Today's Appointments</div></div>
+  <div class="card stat"><div class="ic">🛏️</div><div class="num">{{ available_beds }}</div><div class="lbl">Available Beds</div></div>
+  <div class="card stat"><div class="ic">🚑</div><div class="num">{{ emergency_cases }}</div><div class="lbl">Emergency Cases</div></div>
+  <div class="card stat"><div class="ic">💰</div><div class="num">₹{{ total_revenue }}</div><div class="lbl">Total Revenue</div></div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Recent Appointments</h3>
+    <table>
+      <thead><tr><th>Patient</th><th>Doctor</th><th>Time</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for a in recent_appointments %}
+        <tr><td>{{ a.patient.name }}</td><td>{{ a.doctor.name }}</td><td class="mono">{{ a.time }}</td>
+          <td><span class="pill blue">{{ a.status }}</span></td></tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;color:var(--ink-soft);">Koi appointment nahi</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Live Patient Status</h3>
+    <div>
+      {% for p in patients %}
+      <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px;">
+        <span style="display:flex; align-items:center; gap:9px; font-weight:700;">
+          <span class="dot-status {% if p.status == 'Critical' %}red{% else %}green{% endif %}"></span>{{ p.name }}
+        </span>
+        <span class="mono">{{ p.status }}</span>
+      </div>
+      {% empty %}
+      <p style="color:var(--ink-soft); font-size:12.5px;">Abhi koi patient nahi hai</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
