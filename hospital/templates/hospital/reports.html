@@ -1,0 +1,51 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Reports{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Reports</h1><p>Hospital performance analytics</p></div></div>
+
+<div class="grid-3">
+  <div class="card"><h3>Patients by Status</h3><canvas id="chartStatus" height="200"></canvas></div>
+  <div class="card"><h3>Doctors by Specialization</h3><canvas id="chartSpec" height="200"></canvas></div>
+  <div class="card"><h3>Doctor Availability</h3><canvas id="chartAvail" height="200"></canvas></div>
+</div>
+
+<div class="card">
+  <h3>Patient List</h3>
+  <table>
+    <thead><tr><th>Patient</th><th>Age</th><th>Disease</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for p in patients %}
+      <tr><td>{{ p.name }}</td><td>{{ p.age }}</td><td>{{ p.disease }}</td><td>{{ p.status }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const statusCounts = {};
+{% for p in patients %}statusCounts["{{ p.status }}"] = (statusCounts["{{ p.status }}"]||0)+1;{% endfor %}
+new Chart(document.getElementById('chartStatus'), {
+  type:'doughnut',
+  data:{ labels:Object.keys(statusCounts), datasets:[{ data:Object.values(statusCounts), backgroundColor:['#16A34A','#F59E0B','#EF4444','#6366F1'] }]},
+  options:{ plugins:{legend:{position:'bottom'}} }
+});
+
+const specCounts = {};
+{% for d in doctors %}specCounts["{{ d.specialization|escapejs }}"] = (specCounts["{{ d.specialization|escapejs }}"]||0)+1;{% endfor %}
+new Chart(document.getElementById('chartSpec'), {
+  type:'bar',
+  data:{ labels:Object.keys(specCounts), datasets:[{ label:'Doctors', data:Object.values(specCounts), backgroundColor:'#0EA5A5', borderRadius:6 }]},
+  options:{ plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+});
+
+const availCounts = {Available:0, Busy:0};
+{% for d in doctors %}availCounts["{{ d.availability }}"]++;{% endfor %}
+new Chart(document.getElementById('chartAvail'), {
+  type:'pie',
+  data:{ labels:['Available','Busy'], datasets:[{ data:[availCounts.Available, availCounts.Busy], backgroundColor:['#16A34A','#F59E0B'] }]},
+  options:{ plugins:{legend:{position:'bottom'}} }
+});
+</script>
+{% endblock %}
