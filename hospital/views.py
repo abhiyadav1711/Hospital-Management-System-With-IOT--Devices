@@ -183,3 +183,6 @@ def reports_view(request):
         'patients': Patient.objects.all(),
         'doctors': Doctor.objects.all(),
     })
+@login_required
+def settings_view(request):
+    return render(request, 'hospital/settings.html')
