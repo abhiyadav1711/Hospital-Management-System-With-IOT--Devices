@@ -1,0 +1,51 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Live IoT Monitoring{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Live IoT Monitoring ⭐</h1><p>ESP32 se real sensor data — har 3 second mein auto-refresh hota hai</p></div>
+  <span class="pill green">● LIVE</span>
+</div>
+
+<div class="vitals-grid" id="vitalsGrid">
+  {% for p in patients %}
+  <div class="vital-card" id="card-{{ p.id }}">
+    <div class="vhead"><h4>{{ p.name }}</h4><span class="mono" style="font-size:10.5px;color:var(--ink-soft);">{{ p.patient_code }}</span></div>
+    <p class="nodata">Waiting for device {{ p.device_id|default:"(not linked)" }}...</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function vitalStatusClass(level){ return 'status-'+level; }
+
+async function refreshVitals(){
+  try{
+    const res = await fetch("{% url 'api_vitals_latest' %}");
+    const data = await res.json();
+    data.forEach(p=>{
+      const card = document.getElementById('card-'+p.patient_id);
+      if(!card) return;
+      if(!p.vitals){
+        card.className = 'vital-card';
+        card.innerHTML = `<div class="vhead"><h4>${p.name}</h4><span class="mono" style="font-size:10.5px;color:var(--ink-soft);">${p.patient_code}</span></div>
+          <p class="nodata">Abhi tak koi sensor data nahi mila.</p>`;
+        return;
+      }
+      const v = p.vitals;
+      card.className = 'vital-card ' + vitalStatusClass(v.status_level);
+      card.innerHTML = `
+        <div class="vhead"><h4>${p.name}</h4><span class="mono" style="font-size:10.5px;color:var(--ink-soft);">${p.patient_code}</span></div>
+        <div class="vital-row"><span class="vlbl"><span class="beat">❤️</span> Heart Rate</span><span class="vval">${v.heart_rate} BPM</span></div>
+        <div class="vital-row"><span class="vlbl">🫁 SpO₂</span><span class="vval">${v.spo2}%</span></div>
+        <div class="vital-row"><span class="vlbl">🌡️ Temperature</span><span class="vval">${v.temperature.toFixed ? v.temperature.toFixed(1) : v.temperature}°F</span></div>
+        <div class="vital-row"><span class="vlbl">🩺 Blood Pressure</span><span class="vval">${v.bp_systolic}/${v.bp_diastolic}</span></div>
+        <div class="updated">Last updated: ${new Date(v.timestamp).toLocaleTimeString('en-IN')}</div>`;
+    });
+  }catch(e){ console.error('vitals fetch failed', e); }
+}
+refreshVitals();
+setInterval(refreshVitals, 3000);
+</script>
+{% endblock %}
