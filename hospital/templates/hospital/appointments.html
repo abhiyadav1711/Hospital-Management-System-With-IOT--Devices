@@ -1,0 +1,55 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Appointments{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Appointments</h1><p>Book aur manage karein appointments</p></div>
+  <button class="btn btn-primary" onclick="openForm()">+ Book Appointment</button>
+</div>
+
+<div class="form-panel" id="apptForm">
+  <h3>Book Appointment</h3>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="f-field full"><label>Select Patient</label>
+        <select name="patient" required>
+          {% for p in patients %}<option value="{{ p.id }}">{{ p.name }} ({{ p.patient_code }})</option>{% endfor %}
+        </select></div>
+      <div class="f-field full"><label>Select Doctor</label>
+        <select name="doctor" required>
+          {% for d in doctors %}<option value="{{ d.id }}">Dr. {{ d.name }} — {{ d.specialization }}</option>{% endfor %}
+        </select></div>
+      <div class="f-field"><label>Date</label><input type="date" name="date" required></div>
+      <div class="f-field"><label>Time</label><input type="time" name="time" required></div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" onclick="closeForm()">Cancel</button>
+      <button type="submit" class="btn btn-primary">Book Appointment</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for a in appointments %}
+      <tr>
+        <td>{{ a.patient.name }}</td><td>Dr. {{ a.doctor.name }}</td><td class="mono">{{ a.date }}</td><td class="mono">{{ a.time }}</td>
+        <td><span class="pill {% if a.status == 'Confirmed' %}blue{% elif a.status == 'Completed' %}green{% elif a.status == 'Cancelled' %}red{% else %}orange{% endif %}">{{ a.status }}</span></td>
+        <td>{% if a.status == 'Confirmed' or a.status == 'Waiting' %}<a class="btn btn-sm btn-danger" href="{% url 'appointment_cancel' a.id %}">Cancel</a>{% else %}—{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:20px;">Koi appointment nahi</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openForm(){ document.getElementById('apptForm').classList.add('open'); }
+function closeForm(){ document.getElementById('apptForm').classList.remove('open'); }
+</script>
+{% endblock %}
