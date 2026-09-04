@@ -1,0 +1,23 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Settings{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Settings</h1><p>Apna profile aur system info</p></div></div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Profile</h3>
+    <div class="f-field" style="margin-bottom:12px;"><label>Username</label><input type="text" value="{{ request.user.username }}" disabled></div>
+    <div class="f-field" style="margin-bottom:12px;"><label>Email</label><input type="email" value="{{ request.user.email|default:'—' }}" disabled></div>
+    <p style="font-size:12px; color:var(--ink-soft);">Profile edit ke liye Django Admin use karein.</p>
+  </div>
+  <div class="card">
+    <h3>IoT Device Setup Guide</h3>
+    <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.7;">
+      1. Django Admin mein jaake patient banayein, uska <b>Device ID</b> set karein (e.g. ESP32-01).<br>
+      2. ESP32 code mein wahi Device ID daalein.<br>
+      3. ESP32 WiFi se <span class="mono">POST /api/vitals/</span> par data bhejega.<br>
+      4. Live Monitoring page automatically har 3 second mein naya data dikhayega.
+    </p>
+  </div>
+</div>
+{% endblock %}
