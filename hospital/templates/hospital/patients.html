@@ -1,0 +1,87 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Patients{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Patients</h1><p>Sabhi registered patients ki list</p></div>
+  <button class="btn btn-primary" onclick="openForm()">+ Add Patient</button>
+</div>
+
+<div class="form-panel" id="patientForm">
+  <h3 id="formTitle">Add Patient</h3>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="patient_id" id="patient_id">
+    <div class="form-grid">
+      <div class="f-field full"><label>Full Name</label><input type="text" name="name" id="f_name" required></div>
+      <div class="f-field"><label>Age</label><input type="number" name="age" id="f_age" required></div>
+      <div class="f-field"><label>Gender</label>
+        <select name="gender" id="f_gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+      <div class="f-field full"><label>Disease / Reason</label><input type="text" name="disease" id="f_disease" required></div>
+      <div class="f-field"><label>Status</label>
+        <select name="status" id="f_status"><option>Admitted</option><option>Discharged</option><option>Critical</option></select></div>
+      <div class="f-field"><label>Contact</label><input type="text" name="contact" id="f_contact" placeholder="+91"></div>
+      <div class="f-field full"><label>IoT Device ID <span style="color:var(--ink-soft);">(ESP32 device jo iss patient ke vitals bhejega)</span></label>
+        <input type="text" name="device_id" id="f_device" placeholder="e.g. ESP32-01"></div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" onclick="closeForm()">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save Patient</button>
+    </div>
+  </form>
+</div>
+
+<div class="toolbar">
+  <form method="get" style="display:flex; gap:10px; flex:1;">
+    <input type="text" name="q" placeholder="Search by name or disease..." value="{{ search }}">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="Admitted" {% if status_filter == 'Admitted' %}selected{% endif %}>Admitted</option>
+      <option value="Discharged" {% if status_filter == 'Discharged' %}selected{% endif %}>Discharged</option>
+      <option value="Critical" {% if status_filter == 'Critical' %}selected{% endif %}>Critical</option>
+    </select>
+    <button class="btn btn-outline" type="submit">Search</button>
+  </form>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Patient ID</th><th>Name</th><th>Age</th><th>Disease</th><th>Device ID</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for p in patients %}
+      <tr>
+        <td class="mono">{{ p.patient_code }}</td><td><b>{{ p.name }}</b></td><td>{{ p.age }}</td><td>{{ p.disease }}</td>
+        <td class="mono">{{ p.device_id|default:"—" }}</td>
+        <td><span class="pill {% if p.status == 'Critical' %}red{% elif p.status == 'Admitted' %}blue{% else %}gray{% endif %}">{{ p.status }}</span></td>
+        <td>
+          <button class="action-icon" title="Edit"
+            onclick="editPatient('{{ p.id }}','{{ p.name|escapejs }}','{{ p.age }}','{{ p.gender }}','{{ p.disease|escapejs }}','{{ p.status }}','{{ p.contact|escapejs }}','{{ p.device_id|default:'' }}')">✏️</button>
+          <a class="action-icon" title="Delete" href="{% url 'patient_delete' p.id %}" onclick="return confirm('Delete {{ p.name|escapejs }}?')">🗑️</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="text-align:center;color:var(--ink-soft);padding:20px;">Koi patient nahi mila</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openForm(){ document.getElementById('patientForm').classList.add('open'); document.getElementById('formTitle').textContent='Add Patient'; }
+function closeForm(){ document.getElementById('patientForm').classList.remove('open'); document.querySelector('#patientForm form').reset(); document.getElementById('patient_id').value=''; }
+function editPatient(id,name,age,gender,disease,status,contact,device){
+  document.getElementById('formTitle').textContent='Edit Patient';
+  document.getElementById('patient_id').value=id;
+  document.getElementById('f_name').value=name;
+  document.getElementById('f_age').value=age;
+  document.getElementById('f_gender').value=gender;
+  document.getElementById('f_disease').value=disease;
+  document.getElementById('f_status').value=status;
+  document.getElementById('f_contact').value=contact;
+  document.getElementById('f_device').value=device;
+  document.getElementById('patientForm').classList.add('open');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+{% endblock %}
