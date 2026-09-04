@@ -21,9 +21,10 @@
     </div>
     <nav class="nav">
       <a href="{% url 'dashboard' %}" class="nav-item active"><span>🏥</span>Dashboard</a>
-<a href="{% url 'patients' %}" class="nav-item {% if request.resolver_match.url_name == 'patients' %}active{% endif %}"><span>👤</span>Patients</a>
-<a href="{% url 'monitoring' %}" class="nav-item {% if request.resolver_match.url_name == 'monitoring' %}active{% endif %}"><span>❤️</span>Live Monitoring</a>
-<a href="{% url 'doctors' %}" class="nav-item {% if request.resolver_match.url_name == 'doctors' %}active{% endif %}"><span>👨‍⚕️</span>Doctors</a>
+      <a href="{% url 'patients' %}" class="nav-item {% if request.resolver_match.url_name == 'patients' %}active{% endif %}"><span>👤</span>Patients</a>
+      <a href="{% url 'monitoring' %}" class="nav-item {% if request.resolver_match.url_name == 'monitoring' %}active{% endif %}"><span>❤️</span>Live Monitoring</a>
+      <a href="{% url 'doctors' %}" class="nav-item {% if request.resolver_match.url_name == 'doctors' %}active{% endif %}"><span>👨‍⚕️</span>Doctors</a>
+      <a href="{% url 'appointments' %}" class="nav-item {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}"><span>📅</span>Appointments</a>
     </nav>
     <div class="admin-django">
       <a href="/admin/" target="_blank">🛠️ Django Admin →</a>
