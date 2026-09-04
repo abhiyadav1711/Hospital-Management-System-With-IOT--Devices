@@ -92,3 +92,38 @@ def patient_delete(request, pk):
 def monitoring_view(request):
     patients = Patient.objects.all()
     return render(request, 'hospital/monitoring.html', {'patients': patients})
+@login_required
+def doctors_view(request):
+    if request.method == 'POST':
+        did = request.POST.get('doctor_id')
+        data = dict(
+            name=request.POST.get('name'),
+            specialization=request.POST.get('specialization'),
+            experience_years=request.POST.get('experience_years') or 0,
+            availability=request.POST.get('availability'),
+        )
+        if did:
+            Doctor.objects.filter(id=did).update(**data)
+            messages.success(request, f"Dr. {data['name']} updated.")
+        else:
+            Doctor.objects.create(**data)
+            messages.success(request, f"Dr. {data['name']} added.")
+        return redirect('doctors')
+
+    return render(request, 'hospital/doctors.html', {'doctors': Doctor.objects.all()})
+
+
+@login_required
+def doctor_delete(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    doctor.delete()
+    messages.success(request, f"Dr. {doctor.name} removed.")
+    return redirect('doctors')
+
+
+@login_required
+def doctor_toggle_availability(request, pk):
+    doctor = get_object_or_404(Doctor, pk=pk)
+    doctor.availability = 'Busy' if doctor.availability == 'Available' else 'Available'
+    doctor.save()
+    return redirect('doctors')
