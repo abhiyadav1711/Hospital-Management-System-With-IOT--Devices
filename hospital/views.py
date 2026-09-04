@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Patient, Doctor, Appointment, Bill
+from .models import Patient, Doctor, Appointment, Bill, VitalReading
 from django.shortcuts import get_object_or_404
 
 
@@ -158,3 +158,21 @@ def appointment_cancel(request, pk):
 def emergency_view(request):
     critical = [p for p in Patient.objects.all() if p.latest_vitals and p.latest_vitals.status_level == 'red']
     return render(request, 'hospital/emergency.html', {'critical_patients': critical})
+
+@login_required
+def billing_view(request):
+    if request.method == 'POST':
+        Bill.objects.create(
+            patient_id=request.POST.get('patient'),
+            consultation_fee=request.POST.get('consultation_fee') or 0,
+            room_charges=request.POST.get('room_charges') or 0,
+            medicine_charges=request.POST.get('medicine_charges') or 0,
+            payment_status=request.POST.get('payment_status'),
+        )
+        messages.success(request, "Bill generated.")
+        return redirect('billing')
+
+    return render(request, 'hospital/billing.html', {
+        'bills': Bill.objects.select_related('patient'),
+        'patients': Patient.objects.all(),
+    })
