@@ -1,0 +1,52 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Billing{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Billing</h1><p>Bill generate karein aur payment track karein</p></div>
+  <button class="btn btn-primary" onclick="openForm()">+ Generate Bill</button>
+</div>
+
+<div class="form-panel" id="billForm">
+  <h3>Generate Bill</h3>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="f-field full"><label>Select Patient</label>
+        <select name="patient" required>{% for p in patients %}<option value="{{ p.id }}">{{ p.name }} ({{ p.patient_code }})</option>{% endfor %}</select></div>
+      <div class="f-field"><label>Consultation Fee (₹)</label><input type="number" name="consultation_fee" value="500"></div>
+      <div class="f-field"><label>Room / Bed Charges (₹)</label><input type="number" name="room_charges" value="0"></div>
+      <div class="f-field"><label>Medicine / Tests (₹)</label><input type="number" name="medicine_charges" value="0"></div>
+      <div class="f-field"><label>Payment Status</label><select name="payment_status"><option>Pending</option><option>Paid</option></select></div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" onclick="closeForm()">Cancel</button>
+      <button type="submit" class="btn btn-primary">Generate Bill</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Bill ID</th><th>Patient</th><th>Amount</th><th>Payment</th><th>Date</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for b in bills %}
+      <tr>
+        <td class="mono">BL-{{ b.id }}</td><td>{{ b.patient.name }}</td><td class="mono">₹{{ b.total }}</td>
+        <td><span class="pill {% if b.payment_status == 'Paid' %}green{% else %}orange{% endif %}">{{ b.payment_status }}</span></td>
+        <td class="mono">{{ b.created_at|date:"Y-m-d" }}</td>
+        <td><button class="btn btn-sm btn-outline" onclick="window.print()">🖨️ Print</button></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:20px;">Koi bill nahi</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openForm(){ document.getElementById('billForm').classList.add('open'); }
+function closeForm(){ document.getElementById('billForm').classList.remove('open'); }
+</script>
+{% endblock %}
