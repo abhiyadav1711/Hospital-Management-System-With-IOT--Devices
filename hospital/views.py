@@ -87,3 +87,8 @@ def patient_delete(request, pk):
     patient.delete()
     messages.success(request, f"{patient.name} deleted.")
     return redirect('patients')
+
+@login_required
+def monitoring_view(request):
+    patients = Patient.objects.all()
+    return render(request, 'hospital/monitoring.html', {'patients': patients})
