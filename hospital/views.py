@@ -154,3 +154,7 @@ def appointment_cancel(request, pk):
     appt.status = 'Cancelled'
     appt.save()
     return redirect('appointments')
+@login_required
+def emergency_view(request):
+    critical = [p for p in Patient.objects.all() if p.latest_vitals and p.latest_vitals.status_level == 'red']
+    return render(request, 'hospital/emergency.html', {'critical_patients': critical})
