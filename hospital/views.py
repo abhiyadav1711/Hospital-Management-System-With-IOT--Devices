@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .models import Patient, Doctor, Appointment, Bill
+from django.shortcuts import get_object_or_404
 
 
 def login_view(request):
@@ -46,3 +47,43 @@ def dashboard(request):
         'today': date.today(),
     }
     return render(request, 'hospital/dashboard.html', context)
+@login_required
+def patients_view(request):
+    if request.method == 'POST':
+        pid = request.POST.get('patient_id')
+        data = dict(
+            name=request.POST.get('name'),
+            age=request.POST.get('age'),
+            gender=request.POST.get('gender'),
+            disease=request.POST.get('disease'),
+            status=request.POST.get('status'),
+            contact=request.POST.get('contact'),
+            device_id=request.POST.get('device_id') or None,
+        )
+        if pid:
+            Patient.objects.filter(id=pid).update(**data)
+            messages.success(request, f"{data['name']} updated.")
+        else:
+            Patient.objects.create(**data)
+            messages.success(request, f"{data['name']} added.")
+        return redirect('patients')
+
+    search = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
+    qs = Patient.objects.all()
+    if search:
+        qs = qs.filter(name__icontains=search) | qs.filter(disease__icontains=search)
+    if status_filter:
+        qs = qs.filter(status=status_filter)
+
+    return render(request, 'hospital/patients.html', {
+        'patients': qs.order_by('-created_at'), 'search': search, 'status_filter': status_filter,
+    })
+
+
+@login_required
+def patient_delete(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    patient.delete()
+    messages.success(request, f"{patient.name} deleted.")
+    return redirect('patients')
