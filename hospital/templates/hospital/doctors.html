@@ -1,0 +1,65 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Doctors{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Doctors</h1><p>Medical staff directory</p></div>
+  <button class="btn btn-primary" onclick="openForm()">+ Add Doctor</button>
+</div>
+
+<div class="form-panel" id="doctorForm">
+  <h3 id="formTitle">Add Doctor</h3>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="doctor_id" id="doctor_id">
+    <div class="form-grid">
+      <div class="f-field full"><label>Full Name</label><input type="text" name="name" id="d_name" required></div>
+      <div class="f-field full"><label>Specialization</label><input type="text" name="specialization" id="d_spec" required></div>
+      <div class="f-field"><label>Experience (yrs)</label><input type="number" name="experience_years" id="d_exp"></div>
+      <div class="f-field"><label>Availability</label>
+        <select name="availability" id="d_avail"><option>Available</option><option>Busy</option></select></div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" onclick="closeForm()">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save Doctor</button>
+    </div>
+  </form>
+</div>
+
+<div class="doctor-grid">
+  {% for d in doctors %}
+  <div class="doctor-card">
+    <div class="top">
+      <div class="av">{{ d.name|slice:":2"|upper }}</div>
+      <div><h4>Dr. {{ d.name }}</h4><div style="font-size:11.5px;color:var(--ink-soft);">{{ d.specialization }} · {{ d.experience_years }} yrs</div></div>
+    </div>
+    <div class="foot">
+      <a href="{% url 'doctor_toggle' d.id %}" class="pill {% if d.availability == 'Available' %}green{% else %}orange{% endif %}">
+        {% if d.availability == 'Available' %}🟢{% else %}🟡{% endif %} {{ d.availability }}</a>
+      <div>
+        <button class="action-icon" onclick="editDoctor('{{ d.id }}','{{ d.name|escapejs }}','{{ d.specialization|escapejs }}','{{ d.experience_years }}','{{ d.availability }}')">✏️</button>
+        <a class="action-icon" href="{% url 'doctor_delete' d.id %}" onclick="return confirm('Remove Dr. {{ d.name|escapejs }}?')">🗑️</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p style="color:var(--ink-soft);">Koi doctor nahi mila</p>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openForm(){ document.getElementById('doctorForm').classList.add('open'); document.getElementById('formTitle').textContent='Add Doctor'; }
+function closeForm(){ document.getElementById('doctorForm').classList.remove('open'); document.querySelector('#doctorForm form').reset(); document.getElementById('doctor_id').value=''; }
+function editDoctor(id,name,spec,exp,avail){
+  document.getElementById('formTitle').textContent='Edit Doctor';
+  document.getElementById('doctor_id').value=id;
+  document.getElementById('d_name').value=name;
+  document.getElementById('d_spec').value=spec;
+  document.getElementById('d_exp').value=exp;
+  document.getElementById('d_avail').value=avail;
+  document.getElementById('doctorForm').classList.add('open');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+{% endblock %}
