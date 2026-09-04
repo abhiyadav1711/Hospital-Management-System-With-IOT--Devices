@@ -1,0 +1,27 @@
+{% extends 'hospital/base.html' %}
+{% block page_title %}Emergency Alerts{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>🚨 Emergency Alerts</h1><p>Critical patients jinhe turant attention chahiye (live vitals ke hisaab se)</p></div>
+</div>
+
+{% if critical_patients %}
+  {% for p in critical_patients %}
+  <div class="emg-card">
+    <div class="info">
+      <span class="ic">🚨</span>
+      <div>
+        <h4>Patient: {{ p.name }}</h4>
+        <p>Heart Rate: {{ p.latest_vitals.heart_rate }} BPM · SpO₂ {{ p.latest_vitals.spo2 }}% · Temp {{ p.latest_vitals.temperature }}°F</p>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span class="pill red">🔴 Critical</span>
+      <button class="btn btn-sm btn-danger" onclick="alert('{{ p.name|escapejs }} ke case ke liye doctor ko notify kar diya gaya.')">Notify Doctor</button>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="card" style="text-align:center; color:var(--ink-soft);">✅ Koi emergency nahi — sab patients stable hain</div>
+{% endif %}
+{% endblock %}
