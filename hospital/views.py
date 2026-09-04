@@ -176,3 +176,10 @@ def billing_view(request):
         'bills': Bill.objects.select_related('patient'),
         'patients': Patient.objects.all(),
     })
+
+@login_required
+def reports_view(request):
+    return render(request, 'hospital/reports.html', {
+        'patients': Patient.objects.all(),
+        'doctors': Doctor.objects.all(),
+    })
