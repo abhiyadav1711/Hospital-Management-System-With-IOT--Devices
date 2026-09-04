@@ -127,3 +127,30 @@ def doctor_toggle_availability(request, pk):
     doctor.availability = 'Busy' if doctor.availability == 'Available' else 'Available'
     doctor.save()
     return redirect('doctors')
+
+@login_required
+def appointments_view(request):
+    if request.method == 'POST':
+        Appointment.objects.create(
+            patient_id=request.POST.get('patient'),
+            doctor_id=request.POST.get('doctor'),
+            date=request.POST.get('date'),
+            time=request.POST.get('time'),
+            status='Confirmed',
+        )
+        messages.success(request, "Appointment booked.")
+        return redirect('appointments')
+
+    return render(request, 'hospital/appointments.html', {
+        'appointments': Appointment.objects.select_related('patient', 'doctor'),
+        'patients': Patient.objects.all(),
+        'doctors': Doctor.objects.all(),
+    })
+
+
+@login_required
+def appointment_cancel(request, pk):
+    appt = get_object_or_404(Appointment, pk=pk)
+    appt.status = 'Cancelled'
+    appt.save()
+    return redirect('appointments')
