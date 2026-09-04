@@ -26,6 +26,7 @@
       <a href="{% url 'doctors' %}" class="nav-item {% if request.resolver_match.url_name == 'doctors' %}active{% endif %}"><span>👨‍⚕️</span>Doctors</a>
       <a href="{% url 'appointments' %}" class="nav-item {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}"><span>📅</span>Appointments</a>
       <a href="{% url 'emergency' %}" class="nav-item {% if request.resolver_match.url_name == 'emergency' %}active{% endif %}"><span>🚨</span>Emergency Alerts</a>
+      <a href="{% url 'billing' %}" class="nav-item {% if request.resolver_match.url_name == 'billing' %}active{% endif %}"><span>💰</span>Billing</a>
     </nav>
     <div class="admin-django">
       <a href="/admin/" target="_blank">🛠️ Django Admin →</a>
