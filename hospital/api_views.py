@@ -21,6 +21,8 @@ class VitalIngestView(APIView):
         "bp_diastolic": 84
     }
     """
+    authentication_classes = []
+    permission_classes = [HasDeviceKey]
     def post(self, request):
         serializer = VitalIngestSerializer(data=request.data)
         if serializer.is_valid():
