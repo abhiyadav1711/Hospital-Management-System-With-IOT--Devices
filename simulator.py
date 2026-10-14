@@ -17,7 +17,7 @@ import requests
 
 DEFAULT_URL = "http://127.0.0.1:8000"
 INTERVAL = 2  # seconds between readings
-
+API_KEY = "medipulse-demo-key"  # must match DEVICE_API_KEY in settings.py
 
 def make_reading(device_id, critical):
     if critical:
@@ -61,7 +61,7 @@ def main():
             for device in devices:
                 data = make_reading(device, critical)
                 try:
-                    r = requests.post(endpoint, json=data, timeout=5)
+                    r = requests.post(endpoint, json=data, headers={"X-API-Key": API_KEY}, timeout=5)
                     print(f"[{device}] HR {data['heart_rate']} | SpO2 {data['spo2']} | "
                           f"Temp {data['temperature']} -> {r.status_code} {r.text[:80]}")
                 except requests.exceptions.RequestException as e:
