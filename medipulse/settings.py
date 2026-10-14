@@ -88,3 +88,4 @@ REST_FRAMEWORK = {
 # For real use, set an environment variable MEDIPULSE_DEVICE_KEY with your own secret.
 import os
 DEVICE_API_KEY = os.environ.get('MEDIPULSE_DEVICE_KEY', 'medipulse-demo-key')
+CSRF_TRUSTED_ORIGINS = ['https://*.app.github.dev']
