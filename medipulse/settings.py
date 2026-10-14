@@ -84,3 +84,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
 }
+# IoT devices (ESP32) must send this in the "X-API-Key" header when POSTing vitals.
+# For real use, set an environment variable MEDIPULSE_DEVICE_KEY with your own secret.
+import os
+DEVICE_API_KEY = os.environ.get('MEDIPULSE_DEVICE_KEY', 'medipulse-demo-key')
