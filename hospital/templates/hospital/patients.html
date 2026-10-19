@@ -55,7 +55,7 @@
         <td>
           <button class="action-icon" title="Edit"
             onclick="editPatient('{{ p.id }}','{{ p.name|escapejs }}','{{ p.age }}','{{ p.gender }}','{{ p.disease|escapejs }}','{{ p.status }}','{{ p.contact|escapejs }}','{{ p.device_id|default:'' }}')">✏️</button>
-          <a class="action-icon" title="Delete" href="{% url 'patient_delete' p.id %}" onclick="return confirm('Delete {{ p.name|escapejs }}?')">🗑️</a>
+                    <form method="post" action="{% url 'patient_delete' p.id %}" style="display:inline" onsubmit="return confirm('Delete {{ p.name|escapejs }}?')">{% csrf_token %}<button type="submit" class="action-icon" title="Delete">🗑️</button></form>
         </td>
       </tr>
       {% empty %}
