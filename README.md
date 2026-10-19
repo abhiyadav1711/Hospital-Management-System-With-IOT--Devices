@@ -37,7 +37,7 @@ Open http://127.0.0.1:8000/ and log in with the superuser you created.
 ## IoT Setup
 
 1. Add a patient and set their **Device ID** (for example `ESP32-01`).
-2. The device sends vitals to `POST /api/vitals/`:
+2. The device sends vitals to `POST /api/vitals/` with the header `X-API-Key: medipulse-demo-key`:
 
 ```json
 {
@@ -59,6 +59,11 @@ Open http://127.0.0.1:8000/ and log in with the superuser you created.
 | POST | `/api/vitals/` | Device sends a new reading |
 | GET | `/api/vitals/latest/` | Latest vitals of all patients |
 | GET | `/api/vitals/history/<patient_id>/` | Last 30 readings of a patient |
+
+## Security
+
+- `POST /api/vitals/` accepts requests only with the correct `X-API-Key` header. The key is set by `DEVICE_API_KEY` in `settings.py` (override it with the `MEDIPULSE_DEVICE_KEY` environment variable).
+- All other API endpoints and pages need a logged-in user.
 
 ## Alert Levels
 
