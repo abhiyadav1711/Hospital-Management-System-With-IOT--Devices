@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_POST
 
 from .models import Patient, Doctor, Appointment, Bill, VitalReading
 from django.shortcuts import get_object_or_404
@@ -48,6 +49,7 @@ def dashboard(request):
     }
     return render(request, 'hospital/dashboard.html', context)
 @login_required
+@require_POST
 def patients_view(request):
     if request.method == 'POST':
         pid = request.POST.get('patient_id')
@@ -114,6 +116,7 @@ def doctors_view(request):
 
 
 @login_required
+@require_POST
 def doctor_delete(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     doctor.delete()
@@ -122,6 +125,7 @@ def doctor_delete(request, pk):
 
 
 @login_required
+@require_POST
 def doctor_toggle_availability(request, pk):
     doctor = get_object_or_404(Doctor, pk=pk)
     doctor.availability = 'Busy' if doctor.availability == 'Available' else 'Available'
@@ -149,6 +153,7 @@ def appointments_view(request):
 
 
 @login_required
+@require_POST
 def appointment_cancel(request, pk):
     appt = get_object_or_404(Appointment, pk=pk)
     appt.status = 'Cancelled'
