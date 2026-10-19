@@ -81,7 +81,7 @@ LOGOUT_REDIRECT_URL = 'login'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 # IoT devices (ESP32) must send this in the "X-API-Key" header when POSTing vitals.
