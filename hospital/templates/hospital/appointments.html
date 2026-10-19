@@ -37,7 +37,7 @@
       <tr>
         <td>{{ a.patient.name }}</td><td>Dr. {{ a.doctor.name }}</td><td class="mono">{{ a.date }}</td><td class="mono">{{ a.time }}</td>
         <td><span class="pill {% if a.status == 'Confirmed' %}blue{% elif a.status == 'Completed' %}green{% elif a.status == 'Cancelled' %}red{% else %}orange{% endif %}">{{ a.status }}</span></td>
-        <td>{% if a.status == 'Confirmed' or a.status == 'Waiting' %}<a class="btn btn-sm btn-danger" href="{% url 'appointment_cancel' a.id %}">Cancel</a>{% else %}—{% endif %}</td>
+          <td>{% if a.status == 'Confirmed' or a.status == 'Waiting' %}<form method="post" action="{% url 'appointment_cancel' a.id %}" style="display:inline" onsubmit="return confirm('Cancel this appointment?')">{% csrf_token %}<button type="submit" class="btn btn-sm btn-danger">Cancel</button></form>{% else %}—{% endif %}</td>
       </tr>
       {% empty %}
       <tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:20px;">Koi appointment nahi</td></tr>
