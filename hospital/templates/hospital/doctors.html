@@ -33,9 +33,9 @@
       <div><h4>Dr. {{ d.name }}</h4><div style="font-size:11.5px;color:var(--ink-soft);">{{ d.specialization }} · {{ d.experience_years }} yrs</div></div>
     </div>
     <div class="foot">
-      <a href="{% url 'doctor_toggle' d.id %}" class="pill {% if d.availability == 'Available' %}green{% else %}orange{% endif %}">
-        {% if d.availability == 'Available' %}🟢{% else %}🟡{% endif %} {{ d.availability }}</a>
-      <div>
+        <form method="post" action="{% url 'doctor_toggle' d.id %}" style="display:inline">{% csrf_token %}<button type="submit" class="pill {% if d.availability == 'Available' %}green{% else %}orange{% endif %}" style="border:0;cursor:pointer;font:inherit;">
+        {% if d.availability == 'Available' %}🟢{% else %}🟡{% endif %} {{ d.availability }}</button></form>
+      </div>
         <button class="action-icon" onclick="editDoctor('{{ d.id }}','{{ d.name|escapejs }}','{{ d.specialization|escapejs }}','{{ d.experience_years }}','{{ d.availability }}')">✏️</button>
                 <form method="post" action="{% url 'doctor_delete' d.id %}" style="display:inline" onsubmit="return confirm('Remove Dr. {{ d.name|escapejs }}?')">{% csrf_token %}<button type="submit" class="action-icon">🗑️</button></form>
       </div>
