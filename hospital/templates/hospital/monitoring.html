@@ -20,6 +20,25 @@
 <script>
 function vitalStatusClass(level){ return 'status-'+level; }
 
+async function drawSpark(id){
+  try{
+    const res = await fetch('/api/vitals/history/'+id+'/');
+    const h = await res.json();
+    const el = document.getElementById('spark-'+id);
+    if(!el || h.length < 2) return;
+    const vals = h.map(r=>r.heart_rate);
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const range = (max-min) || 1;
+    const w = 200, ht = 40;
+    const pts = vals.map((v,i)=>{
+      const x = (i/(vals.length-1))*w;
+      const y = ht - 4 - ((v-min)/range)*(ht-8);
+      return x.toFixed(1)+','+y.toFixed(1);
+    }).join(' ');
+    el.innerHTML = `<svg viewBox="0 0 ${w} ${ht}" width="100%" height="${ht}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><div style="font-size:10px;color:var(--ink-soft);">Heart rate trend (last ${vals.length} readings)</div>`;
+  }catch(e){ console.error('history fetch failed', e); }
+}
+
 async function refreshVitals(){
   try{
     const res = await fetch("{% url 'api_vitals_latest' %}");
@@ -41,7 +60,9 @@ async function refreshVitals(){
         <div class="vital-row"><span class="vlbl">🫁 SpO₂</span><span class="vval">${v.spo2}%</span></div>
         <div class="vital-row"><span class="vlbl">🌡️ Temperature</span><span class="vval">${v.temperature.toFixed ? v.temperature.toFixed(1) : v.temperature}°F</span></div>
         <div class="vital-row"><span class="vlbl">🩺 Blood Pressure</span><span class="vval">${v.bp_systolic}/${v.bp_diastolic}</span></div>
+        <div class="spark" id="spark-${p.patient_id}" style="margin-top:8px;color:#e11d48;"></div>
         <div class="updated">Last updated: ${new Date(v.timestamp).toLocaleTimeString('en-IN')}</div>`;
+      drawSpark(p.patient_id);
     });
   }catch(e){ console.error('vitals fetch failed', e); }
 }
