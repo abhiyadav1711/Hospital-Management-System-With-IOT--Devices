@@ -37,7 +37,7 @@
         {% if d.availability == 'Available' %}🟢{% else %}🟡{% endif %} {{ d.availability }}</a>
       <div>
         <button class="action-icon" onclick="editDoctor('{{ d.id }}','{{ d.name|escapejs }}','{{ d.specialization|escapejs }}','{{ d.experience_years }}','{{ d.availability }}')">✏️</button>
-        <a class="action-icon" href="{% url 'doctor_delete' d.id %}" onclick="return confirm('Remove Dr. {{ d.name|escapejs }}?')">🗑️</a>
+                <form method="post" action="{% url 'doctor_delete' d.id %}" style="display:inline" onsubmit="return confirm('Remove Dr. {{ d.name|escapejs }}?')">{% csrf_token %}<button type="submit" class="action-icon">🗑️</button></form>
       </div>
     </div>
   </div>
