@@ -49,7 +49,6 @@ def dashboard(request):
     }
     return render(request, 'hospital/dashboard.html', context)
 @login_required
-@require_POST
 def patients_view(request):
     if request.method == 'POST':
         pid = request.POST.get('patient_id')
@@ -84,6 +83,7 @@ def patients_view(request):
 
 
 @login_required
+@require_POST
 def patient_delete(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     patient.delete()
